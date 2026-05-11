@@ -148,7 +148,6 @@ export default function OrderPage() {
 
   // Calculate totals
   const totalItems = consolidatedOrders.length;
-  const totalUnits = consolidatedOrders.reduce((acc, curr) => acc + curr.quantity, 0);
 
   const handleProceedToCheckout = () => {
     setShowModal(true);
