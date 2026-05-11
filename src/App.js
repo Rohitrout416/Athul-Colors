@@ -5,6 +5,7 @@ import Footer from "./components/Footer";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { Analytics } from "@vercel/analytics/react";
 
 import Login from "./components/Login";
 import SignUp from "./components/Signup";
@@ -46,6 +47,7 @@ function App() {
         draggable
         pauseOnHover
       />
+      <Analytics />
     </Router>
   );
 }
