@@ -17,6 +17,7 @@ export default function OrderPage() {
   const [showModal, setShowModal] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState(null);
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
@@ -122,21 +123,28 @@ export default function OrderPage() {
     return s.color !== '';
   };
 
+  // Determine unit based on product name
+  const getUnit = (name) => name?.toLowerCase().includes('pigment') ? 'kg' : 'L';
+
   // Consolidate orders for display
   const consolidatedOrders = Object.values(orders.reduce((acc, order) => {
     if (!acc[order.productName]) {
       acc[order.productName] = {
         productName: order.productName,
         quantity: 0,
-        ids: [], // Keep track of all IDs for this product
-        // Keep reference to at least one ID for key
+        customHex: order.customHex || null,
+        ids: [],
         _id: order._id
       };
     }
     acc[order.productName].quantity += Number(order.quantity);
     acc[order.productName].ids.push(order._id);
+    // Keep the most recent customHex
+    if (order.customHex) acc[order.productName].customHex = order.customHex;
     return acc;
   }, {}));
+
+
 
   // Calculate totals
   const totalItems = consolidatedOrders.length;
@@ -229,7 +237,7 @@ export default function OrderPage() {
                 </div>
 
                 <div className="form-group">
-                  <label className="form-label">Quantity (Units)</label>
+                  <label className="form-label">Quantity (in {selectedProduct && getUnit(selectedProduct.name) === 'kg' ? 'kilograms' : 'litres'})</label>
                   <div className="quantity-wrapper">
                     <button type="button" className="qty-btn" onClick={decrementQty}>-</button>
                     <input
@@ -265,38 +273,25 @@ export default function OrderPage() {
               </div>
               {consolidatedOrders.length > 0 ? (
                 <div className="order-list">
-                  {consolidatedOrders.map((order, index) => (
-                    <div key={order._id || index} className="order-item">
-                      <div
-                        className="swatch-preview"
-                        style={{ backgroundColor: (products.find(p => p.name === order.productName)?.hex) || (isColor(order.productName) ? order.productName : '#ccc') }}
-                      ></div>
-                      <span className="product-code">{order.productName}</span>
-                      <span className="qty-badge">{order.quantity}</span>
-                      <button
-                        className="remove-link"
-                        onClick={() => {
-                          // Delete all IDs associated with this consolidated row
-                          const confirmDelete = window.confirm(`Remove all ${order.quantity} units of ${order.productName}?`);
-                          if (confirmDelete) {
-                            // Map all deletes
-                            const token = localStorage.getItem("token");
-                            Promise.all(order.ids.map(itemId => axios.delete(`${API_URL}/order/${id}/${itemId}`, { headers: { "Authorization": token } })))
-                              .then(() => {
-                                setOrders(prev => prev.filter(o => o.productName !== order.productName));
-                                toast.info("Line item removed.");
-                              })
-                              .catch(err => {
-                                console.error(err);
-                                toast.error("Failed to remove items.");
-                              });
-                          }
-                        }}
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  ))}
+                  {consolidatedOrders.map((order, index) => {
+                    const swatchColor = order.customHex || (products.find(p => p.name === order.productName)?.hex) || (isColor(order.productName) ? order.productName : '#ccc');
+                    return (
+                      <div key={order._id || index} className="order-item" style={{ position: 'relative' }}>
+                        <div
+                          className="swatch-preview"
+                          style={{ backgroundColor: swatchColor }}
+                        ></div>
+                        <span className="product-code">{order.productName}</span>
+                        <span className="qty-badge">{order.quantity} {getUnit(order.productName)}</span>
+                        <button
+                          className="remove-link"
+                          onClick={() => setDeleteTarget(order)}
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    );
+                  })}
                 </div>
               ) : (
                 <div className="empty-state">
@@ -312,7 +307,7 @@ export default function OrderPage() {
       {/* Sticky Footer */}
       <div className="sticky-footer">
         <div className="order-summary-text">
-          {totalItems} items • {totalUnits} units total
+          {totalItems} items
         </div>
         <button
           className="checkout-btn"
@@ -334,7 +329,7 @@ export default function OrderPage() {
                 {consolidatedOrders.map((order, idx) => (
                   <div key={idx} className="summary-item">
                     <span>{order.productName}</span>
-                    <strong>{order.quantity} units</strong>
+                    <strong>{order.quantity} {getUnit(order.productName)}</strong>
                   </div>
                 ))}
               </div>
@@ -347,6 +342,38 @@ export default function OrderPage() {
           </div>
         )
       }
+
+      {/* Delete Confirmation Modal */}
+      {deleteTarget && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h3 className="modal-title">Remove Item</h3>
+            <p style={{ color: '#475569', margin: '16px 0' }}>
+              Remove all <strong>{deleteTarget.quantity} {getUnit(deleteTarget.productName)}</strong> of <strong>{deleteTarget.productName}</strong>?
+            </p>
+            <div className="modal-actions">
+              <button className="cancel-btn" onClick={() => setDeleteTarget(null)}>Cancel</button>
+              <button className="confirm-btn" style={{ background: '#dc2626' }} onClick={handleConfirmDelete}>Remove</button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
+
+  function handleConfirmDelete() {
+    if (!deleteTarget) return;
+    const token = localStorage.getItem("token");
+    Promise.all(deleteTarget.ids.map(itemId => axios.delete(`${API_URL}/order/${id}/${itemId}`, { headers: { "Authorization": token } })))
+      .then(() => {
+        setOrders(prev => prev.filter(o => o.productName !== deleteTarget.productName));
+        toast.info("Line item removed.");
+        setDeleteTarget(null);
+      })
+      .catch(err => {
+        console.error(err);
+        toast.error("Failed to remove items.");
+        setDeleteTarget(null);
+      });
+  }
 }

@@ -564,3 +564,304 @@ ul li a {
 .mb-1 {
   margin-bottom: 1rem !important;
 }
+
+/* Product Grid Layout */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+  padding: 10px 0;
+}
+
+@media (max-width: 992px) {
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 576px) {
+  .product-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}
+
+.product-grid .card {
+  width: 100%;
+  min-height: 320px;
+}
+
+/* View All / Show Less Toggle Button */
+.view-all-toggle {
+  display: flex;
+  justify-content: center;
+  margin-top: 36px;
+}
+
+.view-all-btn {
+  background: linear-gradient(135deg, #01bf71 0%, #0ea5e9 100%);
+  color: white;
+  border: none;
+  padding: 14px 44px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 50px;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 15px rgba(1, 191, 113, 0.3);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.view-all-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(1, 191, 113, 0.45);
+}
+
+.view-all-btn:active {
+  transform: translateY(0);
+}
+
+.view-all-btn svg {
+  transition: transform 0.3s ease;
+}
+
+.view-all-btn.expanded svg {
+  transform: rotate(180deg);
+}
+
+/* Pigment List inside Card */
+.pigment-list {
+  margin-top: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pigment-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: #f8fafc;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+}
+
+.pigment-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pigment-swatch {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1);
+}
+
+.pigment-name {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #334155;
+}
+
+.pigment-add-btn {
+  background: #10B981;
+  color: white;
+  border: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  line-height: 1;
+  transition: background-color 0.2s;
+}
+
+.pigment-add-btn:hover {
+  background: #059669;
+}
+
+.view-more-btn {
+  background: none;
+  border: none;
+  color: #0ea5e9;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 8px;
+  padding: 5px 0;
+  text-align: center;
+  width: 100%;
+}
+
+.view-more-btn:hover {
+  text-decoration: underline;
+}
+
+/* Custom Color Option (3rd swatch slot) */
+.custom-color-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: linear-gradient(135deg, #f0f9ff 0%, #fdf2f8 100%);
+  border-radius: 6px;
+  border: 1px dashed #94a3b8;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.custom-color-trigger:hover {
+  border-color: #0ea5e9;
+  background: linear-gradient(135deg, #e0f2fe 0%, #fce7f3 100%);
+}
+
+.custom-color-trigger .pigment-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.custom-swatch-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: conic-gradient(
+    #f87171, #fb923c, #facc15, #4ade80,
+    #22d3ee, #818cf8, #e879f9, #f87171
+  );
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1);
+}
+
+/* Color Picker Popover */
+.color-picker-popover {
+  margin-top: 12px;
+  padding: 16px;
+  background: white;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+}
+
+.picker-preview-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.picker-swatch-large {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.08);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.picker-swatch-large input[type="color"] {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  border: none;
+}
+
+.picker-name-input {
+  flex-grow: 1;
+  padding: 8px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.picker-name-input:focus {
+  border-color: #0ea5e9;
+}
+
+.picker-add-btn {
+  background: #10B981;
+  color: white;
+  border: none;
+  padding: 9px 18px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  white-space: nowrap;
+}
+
+.picker-add-btn:hover {
+  background: #059669;
+}
+
+/* Cart Color Editor Popover */
+.cart-color-editor {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 10;
+  background: white;
+  border-radius: 8px;
+  padding: 12px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  border: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 220px;
+}
+
+.cart-color-editor input[type="color"] {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  padding: 0;
+  background: none;
+}
+
+.cart-color-editor .save-btn {
+  background: #10B981;
+  color: white;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.cart-color-editor .save-btn:hover {
+  background: #059669;
+}
+
+.swatch-preview.editable {
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.15s;
+}
+
+.swatch-preview.editable:hover {
+  transform: scale(1.15);
+  box-shadow: 0 0 0 2px #0ea5e9;
+}
+
